@@ -1,0 +1,22 @@
+.fast-tracker {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .fast-info {
+    margin-bottom: 20px;
+  }
+  
+  .fast-button {
+    background-color: green;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .fast-button:hover {
+    background-color: darkgreen;
+  }
+  
