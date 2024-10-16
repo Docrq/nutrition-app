@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import FastTracker from './FastTracker'; // Assure-toi que ce chemin est correct
+import FastTracker from './FastTracker'; // Assurez-vous que ce chemin est correct
+import Recipes from './Recipes'; // Assurez-vous que le chemin est correct
+import RecipeDetail from './RecipeDetail'; // Assurez-vous que ce chemin est correct pour le détail de recette
 import './App.css';
+
+// Clé API Spoonacular
+const API_KEY = '2fb0ae0397c74c22b9e4a5610c19665b';
 
 function App() {
   const [currentDate] = useState(new Date());
@@ -29,7 +34,7 @@ function App() {
     const updatedMeals = meals.map((meal) => {
       if (meal.id === newFood.mealId) {
         const updatedFoods = [...meal.foods, { name: newFood.name, calories: newFood.calories }];
-        const updatedCalories = meal.calories + parseInt(newFood.calories);
+        const updatedCalories = meal.calories + parseInt(newFood.calories, 10);
         return { ...meal, foods: updatedFoods, calories: updatedCalories };
       }
       return meal;
@@ -67,6 +72,26 @@ function App() {
 
     setMeals(updatedMeals);
   };
+
+  // Ajouter Spoonacular API pour les recettes
+  const [spoonacularRecipes, setSpoonacularRecipes] = useState([]);
+
+  useEffect(() => {
+    const fetchSpoonacularRecipes = async () => {
+      try {
+        const response = await fetch(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}&number=10&maxCalories=800`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log(data);
+        setSpoonacularRecipes(data.results);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des recettes Spoonacular :', error.message);
+      }
+    };
+    fetchSpoonacularRecipes();
+  }, []);
 
   return (
     <Router>
@@ -188,8 +213,14 @@ function App() {
             }
           />
 
-          {/* Page pour le jeûne intermittent */}
+          {/* Page de jeûne */}
           <Route path="/fast" element={<FastTracker />} />
+
+          {/* Page de recettes */}
+          <Route path="/recipes" element={<Recipes recipes={spoonacularRecipes} />} />
+
+          {/* Page de détails de la recette */}
+          <Route path="/recipe/:id" element={<RecipeDetail />} />
         </Routes>
       </div>
     </Router>
