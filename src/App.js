@@ -27,6 +27,7 @@ function App() {
     { id: 4, name: 'En-cas', calories: 0, target: 200, icon: '⏳', foods: [] },
   ]);
   const [newFood, setNewFood] = useState({ name: '', calories: 0, mealId: 1 });
+  const [isAddingFood, setIsAddingFood] = useState({}); // Pour gérer l'affichage du formulaire par repas
 
   // Gérer l'ajout d'un aliment
   const handleAddFood = (e) => {
@@ -163,31 +164,35 @@ function App() {
                 </div>
 
                 <section className="meals-section">
-                  <div className="section-header">
-                    <h2>Alimentation</h2>
-                    <button className="text-button">Plus</button>
-                  </div>
-
-                  <div className="meal-list">
-                    {meals.map((meal) => (
-                      <div key={meal.id} className="meal-item">
-                        <div className="meal-info">
-                          <span className="meal-icon">{meal.icon}</span>
-                          <div className="meal-details">
-                            <span className="meal-name">{meal.name}</span>
-                            <span className="meal-calories">{meal.calories} / {meal.target} kcal</span>
-                          </div>
+                  {meals.map((meal) => (
+                    <div key={meal.id} className="meal-item">
+                      <div className="meal-info">
+                        <span className="meal-icon">{meal.icon}</span>
+                        <div className="meal-details">
+                          <span className="meal-name">{meal.name}</span>
+                          <span className="meal-calories">{meal.calories} / {meal.target} kcal</span>
                         </div>
+                      </div>
 
-                        <ul className="food-list">
-                          {meal.foods.map((food, index) => (
-                            <li key={index}>
-                              {food.name} - {food.calories} kcal
-                              <button onClick={() => handleRemoveFood(meal.id, index)}>Supprimer</button>
-                            </li>
-                          ))}
-                        </ul>
+                      <ul className="food-list">
+                        {meal.foods.map((food, index) => (
+                          <li key={index}>
+                            {food.name} - {food.calories} kcal
+                            <button onClick={() => handleRemoveFood(meal.id, index)}>Supprimer</button>
+                          </li>
+                        ))}
+                      </ul>
 
+                      {/* Bouton pour afficher/masquer le formulaire */}
+                      <button
+                        className="text-button"
+                        onClick={() => setIsAddingFood((prev) => ({ ...prev, [meal.id]: !prev[meal.id] }))}
+                      >
+                        {isAddingFood[meal.id] ? '−' : '+'}
+                      </button>
+
+                      {/* Formulaire d'ajout d'aliment, visible selon l'état */}
+                      {isAddingFood[meal.id] && (
                         <form onSubmit={handleAddFood}>
                           <input
                             type="text"
@@ -205,9 +210,9 @@ function App() {
                             Ajouter
                           </button>
                         </form>
-                      </div>
-                    ))}
-                  </div>
+                      )}
+                    </div>
+                  ))}
                 </section>
               </>
             }
